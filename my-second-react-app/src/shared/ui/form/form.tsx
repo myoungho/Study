@@ -10,7 +10,7 @@ export function FormField({ className, ...props }: HTMLAttributes<HTMLDivElement
 export function FormLabel({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("text-sm font-medium text-slate-700 dark:text-slate-200", className)}
+      className={cn("text-sm font-medium text-[var(--app-fg)]", className)}
       {...props}
     />
   );

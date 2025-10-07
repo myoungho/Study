@@ -7,7 +7,6 @@ interface ThemeState {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
-  hydrate: () => void;
 }
 
 const STORAGE_KEY = "my-second-react-app-theme";
@@ -35,14 +34,9 @@ export const useThemeStore = create<ThemeState>()(
         const next = get().theme === "dark" ? "light" : "dark";
         set({ theme: next });
       },
-      hydrate: () => {
-        const next = getPreferredTheme();
-        set({ theme: next });
-      },
     }),
     {
       name: STORAGE_KEY,
-      skipHydration: true,
     }
   )
 );
