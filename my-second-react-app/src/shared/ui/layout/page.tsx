@@ -15,9 +15,9 @@ export function PageHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function PageTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h1 className={cn("text-3xl font-bold tracking-tight", className)} {...props} />;
+  return <h1 className={cn("text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100", className)} {...props} />;
 }
 
 export function PageSubtitle({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-base text-muted", className)} {...props} />;
+  return <p className={cn("text-base text-slate-500 dark:text-slate-400", className)} {...props} />;
 }

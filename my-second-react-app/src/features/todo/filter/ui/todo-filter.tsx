@@ -16,10 +16,13 @@ export function TodoFilter() {
   const setSearch = useTodoFilterStore((state) => state.setSearch);
 
   return (
-    <div className="surface-card flex flex-col gap-4 rounded-2xl border p-4">
+    <div className="surface-card flex flex-col gap-4 rounded-2xl border border-surface p-4">
       <div className="flex flex-col gap-1">
-        <PageSubtitle className="text-sm font-semibold">빠르게 찾고 상태를 전환하세요</PageSubtitle>
+        <PageSubtitle className="text-sm font-semibold text-subtle">
+          빠르게 찾고 상태를 전환하세요
+        </PageSubtitle>
         <Input
+          className="input-surface"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="업무 검색"

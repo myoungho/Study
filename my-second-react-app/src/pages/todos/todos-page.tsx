@@ -25,7 +25,9 @@ export function TodosPage() {
     <PageContainer>
       <PageHeader className="space-y-3">
         <PageTitle>업무 보드</PageTitle>
-        <PageSubtitle>상태, 검색어, 개인화된 워크플로우로 업무를 정리하세요.</PageSubtitle>
+        <PageSubtitle className="text-muted">
+          상태, 검색어, 개인화된 워크플로우로 업무를 정리하세요.
+        </PageSubtitle>
       </PageHeader>
 
       <section className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
@@ -56,7 +58,7 @@ export function TodosPage() {
       <section className="space-y-4">
         <PageTitle className="text-2xl">업무 목록</PageTitle>
         {isError && (
-          <p className="rounded-lg border border-[color:var(--border-color)] bg-[color:var(--card-hover-bg)] p-4 text-sm text-red-300">
+          <p className="rounded-lg border border-rose-400/40 bg-rose-500/10 p-4 text-sm text-rose-300 dark:border-rose-200 dark:bg-rose-100/60 dark:text-rose-700">
             데이터를 불러오지 못했습니다. {(error as Error).message}
           </p>
         )}
@@ -74,7 +76,7 @@ export function TodosPage() {
               />
             ))}
             {filteredTodos.length === 0 && (
-              <p className="rounded-lg border border-[color:var(--border-color)] bg-[color:var(--card-bg)] p-4 text-sm text-muted">
+              <p className="surface-card rounded-lg border border-surface p-4 text-sm text-muted">
                 조건에 해당하는 업무가 없습니다. 다른 검색어를 시도하세요.
               </p>
             )}

@@ -13,7 +13,7 @@ export function HomePage() {
     <PageContainer>
       <PageHeader className="space-y-3">
         <PageTitle>오늘의 업무를 계획해보세요</PageTitle>
-        <PageSubtitle>
+        <PageSubtitle className="text-muted">
           진행 중인 업무를 한눈에 살펴보고, 완료율을 높이기 위한 집중 영역을 찾아보세요.
         </PageSubtitle>
         <div className="flex flex-wrap gap-3">

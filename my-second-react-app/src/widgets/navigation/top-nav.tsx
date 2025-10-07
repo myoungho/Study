@@ -24,10 +24,10 @@ export function TopNav() {
   }, [user?.name]);
 
   return (
-    <header className="nav-surface sticky top-0 z-50 border-b backdrop-blur">
+    <header className="nav-surface sticky top-0 z-50 border-b border-surface backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-4">
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-lg font-semibold tracking-tight">
+          <Link to="/" className="text-lg font-semibold tracking-tight text-subtle">
             {appConfig.appName}
           </Link>
           <nav className="hidden items-center gap-4 text-sm font-medium text-muted md:flex">
@@ -51,7 +51,7 @@ export function TopNav() {
           {status === "authenticated" && user ? (
             <div className="flex items-center gap-2 text-sm">
               <span className="hidden text-muted md:inline">{user.name}</span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--card-hover-bg)] text-xs font-semibold text-primary">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
                 {initials}
               </span>
               <Button variant="ghost" size="sm" onClick={signOut}>

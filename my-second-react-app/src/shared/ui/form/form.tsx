@@ -10,7 +10,7 @@ export function FormField({ className, ...props }: HTMLAttributes<HTMLDivElement
 export function FormLabel({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("text-sm font-medium text-subtle", className)}
+      className={cn("text-sm font-medium text-slate-700 dark:text-slate-200", className)}
       {...props}
     />
   );
@@ -18,7 +18,7 @@ export function FormLabel({ className, ...props }: LabelHTMLAttributes<HTMLLabel
 
 export function FormDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-xs text-muted", className)} {...props} />
+    <p className={cn("text-xs text-slate-500 dark:text-slate-400", className)} {...props} />
   );
 }
 
@@ -33,7 +33,7 @@ export function FormMessage({ error, className, ...props }: FormMessageProps) {
   if (!message) return null;
 
   return (
-    <p className={cn("text-xs font-medium text-red-400", className)} {...props}>
+    <p className={cn("text-xs font-medium text-rose-500", className)} {...props}>
       {message}
     </p>
   );

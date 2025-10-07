@@ -1,13 +1,26 @@
 ﻿import "sonner/dist/styles.css";
 import { Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { Suspense, useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useAuthStore } from "@/features/auth/model/auth-store";
 import { TopNav } from "@/widgets/navigation/top-nav";
 
+type RouterDevtoolsModule = typeof import("@tanstack/react-router-devtools");
+type RouterDevtoolsProps = Parameters<RouterDevtoolsModule["TanStackRouterDevtools"]>[0];
+
+const isDev = import.meta.env.DEV;
+let LazyRouterDevtools: React.ComponentType<RouterDevtoolsProps> | null = null;
+
+if (isDev) {
+  LazyRouterDevtools = lazy(() =>
+    import("@tanstack/react-router-devtools").then((mod) => ({
+      default: mod.TanStackRouterDevtools,
+    }))
+  );
+}
+
 const Fallback = () => (
-  <div className="p-6 text-sm text-muted">콘텐츠를 불러오는 중...</div>
+  <div className="px-6 py-8 text-sm text-muted">콘텐츠를 불러오는 중...</div>
 );
 
 export function AppShell() {
@@ -18,7 +31,7 @@ export function AppShell() {
   }, [bootstrap]);
 
   return (
-    <div className="app-bg min-h-screen">
+    <div className="app-bg min-h-screen transition-colors duration-200 ease-out">
       <TopNav />
       <main className="pb-16">
         <Suspense fallback={<Fallback />}>
@@ -26,7 +39,11 @@ export function AppShell() {
         </Suspense>
       </main>
       <Toaster theme="dark" position="bottom-right" richColors closeButton />
-      <TanStackRouterDevtools position="bottom-right" />
+      {isDev && LazyRouterDevtools && (
+        <Suspense fallback={null}>
+          <LazyRouterDevtools position="bottom-right" />
+        </Suspense>
+      )}
     </div>
   );
 }

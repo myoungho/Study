@@ -13,8 +13,13 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    document.body.classList.remove("light", "dark");
-    document.body.classList.add(theme);
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    body.classList.remove("light", "dark");
+    body.classList.add(theme);
   }, [theme]);
 
   return <>{children}</>;

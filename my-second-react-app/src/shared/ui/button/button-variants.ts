@@ -5,10 +5,10 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:color-mix(in srgb, var(--color-primary) 92%, white)]",
-        secondary: "bg-[color:var(--nav-bg)] text-[color:var(--app-fg)] border-surface hover:bg-[color:var(--card-hover-bg)]",
-        outline: "border-surface bg-transparent text-[color:var(--text-muted)] hover:bg-[color:var(--card-hover-bg)]",
-        ghost: "bg-transparent text-[color:var(--text-muted)] hover:bg-[color:var(--card-hover-bg)]",
+        primary: "bg-primary text-white shadow-sm hover:bg-primary/90 focus-visible:ring-primary/60",
+        secondary: "bg-slate-100 text-slate-800 shadow-sm hover:bg-slate-200 focus-visible:ring-slate-400/50 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
+        outline: "border-slate-300 bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400/50 dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-800",
+        ghost: "bg-transparent text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400/40 dark:text-slate-300 dark:hover:bg-slate-800",
       },
       size: {
         sm: "px-3 py-1 text-xs",

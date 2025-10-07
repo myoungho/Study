@@ -20,12 +20,14 @@ export function TodoDetailPage({ todoId }: TodoDetailPageProps) {
     <PageContainer>
       <PageHeader className="space-y-3">
         <PageTitle>업무 상세</PageTitle>
-        <PageSubtitle>단일 업무의 진행 상황과 메타데이터를 확인하세요.</PageSubtitle>
+        <PageSubtitle className="text-muted">
+          단일 업무의 진행 상황과 메타데이터를 확인하세요.
+        </PageSubtitle>
       </PageHeader>
 
       {isPending && <p className="text-sm text-muted">업무를 불러오는 중...</p>}
       {isError && (
-        <p className="rounded-lg border border-[color:var(--border-color)] bg-[color:var(--card-hover-bg)] p-4 text-sm text-red-300">
+        <p className="rounded-lg border border-rose-400/40 bg-rose-500/10 p-4 text-sm text-rose-300 dark:border-rose-200 dark:bg-rose-100/60 dark:text-rose-700">
           해당 업무를 찾을 수 없습니다.
         </p>
       )}
@@ -37,7 +39,7 @@ export function TodoDetailPage({ todoId }: TodoDetailPageProps) {
             <CardDescription>업무 번호 #{todo.id}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between rounded-xl border border-surface bg-[color:var(--card-bg)] p-4">
+            <div className="surface-card rounded-xl border border-surface p-4">
               <span className="text-sm text-muted">현재 상태</span>
               <span className="text-sm font-semibold text-primary">
                 {todo.completed ? "완료" : "진행중"}

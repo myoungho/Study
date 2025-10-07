@@ -28,13 +28,14 @@ export function TodoCreateForm() {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="surface-card flex flex-col gap-4 rounded-2xl border p-4"
+      className="surface-card flex flex-col gap-4 rounded-2xl border border-surface p-4"
     >
       <FormField>
         <FormLabel htmlFor="title">새로운 업무</FormLabel>
         <FormControl>
           <FormItem>
             <Input
+              className="input-surface"
               id="title"
               placeholder="다음으로 해결할 업무는?"
               {...form.register("title")}

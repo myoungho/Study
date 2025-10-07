@@ -34,14 +34,14 @@ export function SignInPage() {
     <PageContainer className="max-w-xl">
       <PageHeader className="space-y-3">
         <PageTitle>팀 워크스페이스에 로그인</PageTitle>
-        <PageSubtitle>
+        <PageSubtitle className="text-muted">
           ASP.NET Core API와 연동하기 전에, 프론트엔드만으로 로그인 경험을 설계해봅니다.
         </PageSubtitle>
       </PageHeader>
 
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="surface-card flex flex-col gap-4 rounded-2xl border p-6"
+        className="surface-card flex flex-col gap-4 rounded-2xl border border-surface p-6"
       >
         <FormField>
           <FormLabel htmlFor="email">이메일</FormLabel>
@@ -68,7 +68,7 @@ export function SignInPage() {
           </FormControl>
         </FormField>
 
-        <Button type="submit" disabled={status === "loading"} className="w-full">
+        <Button type="submit" disabled={status === "loading"} className="mt-2 w-full">
           {status === "loading" ? "로그인 중..." : "로그인"}
         </Button>
       </form>

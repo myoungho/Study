@@ -15,7 +15,7 @@ export function TodoCard({ todo, onToggle }: TodoCardProps) {
       type="button"
       onClick={() => onToggle?.(todo)}
       className={cn(
-        "surface-card surface-card-hover flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition",
+        "surface-card surface-card-hover flex w-full items-start gap-4 rounded-2xl border border-surface p-4 text-left transition focus:outline-none focus:ring-2 focus:ring-primary/50",
         isCompleted && "border-primary/70"
       )}
     >
