@@ -8,13 +8,13 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as _notFoundRouteImport } from './routes/__not-found'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as TodosIndexRouteImport } from './routes/todos/index'
-import { Route as TodosTodoIdRouteImport } from './routes/todos/$todoId'
-import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
-import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
+import { Route as rootRouteImport } from './app/routes/__root'
+import { Route as _notFoundRouteImport } from './app/routes/__not-found'
+import { Route as IndexRouteImport } from './app/routes/index'
+import { Route as TodosIndexRouteImport } from './app/routes/todos/index'
+import { Route as TodosTodoIdRouteImport } from './app/routes/todos/$todoId'
+import { Route as AuthSignUpRouteImport } from './app/routes/auth.sign-up'
+import { Route as AuthSignInRouteImport } from './app/routes/auth.sign-in'
 
 const _notFoundRoute = _notFoundRouteImport.update({
   id: '/__not-found',

@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/postcss";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react(), TanStackRouterVite()],
+  plugins: [react(), TanStackRouterVite({ routesDirectory: "./src/app/routes" })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
