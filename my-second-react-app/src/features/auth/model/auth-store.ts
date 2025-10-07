@@ -13,6 +13,7 @@ interface AuthState {
   token: string | null;
   status: "anonymous" | "authenticated" | "loading";
   signIn: (credentials: { email: string; password: string }) => Promise<void>;
+  signUp: (credentials: { name: string; email: string; password: string }) => Promise<void>;
   signOut: () => void;
   bootstrap: () => void;
   reset: () => void;
@@ -38,6 +39,23 @@ export const useAuthStore = create<AuthState>()(
             id: crypto.randomUUID(),
             email,
             name: email.split("@")[0] ?? "Guest",
+          };
+          state.token = `dummy-token-${Date.now()}`;
+          state.status = "authenticated";
+        });
+      },
+      async signUp({ name, email }) {
+        set((state) => {
+          state.status = "loading";
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
+        set((state) => {
+          state.user = {
+            id: crypto.randomUUID(),
+            email,
+            name,
           };
           state.token = `dummy-token-${Date.now()}`;
           state.status = "authenticated";

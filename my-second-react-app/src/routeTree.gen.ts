@@ -13,6 +13,7 @@ import { Route as _notFoundRouteImport } from './routes/__not-found'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TodosIndexRouteImport } from './routes/todos/index'
 import { Route as TodosTodoIdRouteImport } from './routes/todos/$todoId'
+import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
 import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 
 const _notFoundRoute = _notFoundRouteImport.update({
@@ -34,6 +35,11 @@ const TodosTodoIdRoute = TodosTodoIdRouteImport.update({
   path: '/todos/$todoId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/auth/sign-up',
+  path: '/auth/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/auth/sign-in',
   path: '/auth/sign-in',
@@ -43,12 +49,14 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
   '/todos': typeof TodosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
   '/todos': typeof TodosIndexRoute
 }
@@ -57,19 +65,26 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/__not-found': typeof _notFoundRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
   '/todos/': typeof TodosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/sign-in' | '/todos/$todoId' | '/todos'
+  fullPaths:
+    | '/'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/todos/$todoId'
+    | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/sign-in' | '/todos/$todoId' | '/todos'
+  to: '/' | '/auth/sign-in' | '/auth/sign-up' | '/todos/$todoId' | '/todos'
   id:
     | '__root__'
     | '/'
     | '/__not-found'
     | '/auth/sign-in'
+    | '/auth/sign-up'
     | '/todos/$todoId'
     | '/todos/'
   fileRoutesById: FileRoutesById
@@ -78,6 +93,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   _notFoundRoute: typeof _notFoundRoute
   AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
   TodosTodoIdRoute: typeof TodosTodoIdRoute
   TodosIndexRoute: typeof TodosIndexRoute
 }
@@ -112,6 +128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TodosTodoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/auth/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/sign-in': {
       id: '/auth/sign-in'
       path: '/auth/sign-in'
@@ -126,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   _notFoundRoute: _notFoundRoute,
   AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
   TodosTodoIdRoute: TodosTodoIdRoute,
   TodosIndexRoute: TodosIndexRoute,
 }
