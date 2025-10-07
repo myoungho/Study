@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent } from "@/components/ui/card";
-import { useTodoStore } from "@/store/useTodoStore";
 
-export function TodoStats() {
-  const todos = useTodoStore((state) => state.todos);
+interface TodoStatsProps {
+  todos: any[];
+}
 
+export function TodoStats({ todos }: TodoStatsProps) {
   const total = todos.length;
   const completed = todos.filter((todo) => todo.completed).length;
   const pending = total - completed;

@@ -1,7 +1,7 @@
+import { useUpdateTodoMutation, useDeleteTodoMutation } from "@/hooks/useTodos";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useTodoStore } from "@/store/useTodoStore";
 
 interface TodoItemProps {
   todo: {
@@ -12,14 +12,27 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
-  const { toggleTodo, removeTodo } = useTodoStore();
+  const updateMutation = useUpdateTodoMutation();
+  const deleteMutation = useDeleteTodoMutation();
+
+  const handleToggle = () => {
+    updateMutation.mutate({
+      id: todo.id,
+      completed: !todo.completed,
+    });
+  };
+
+  const handleDelete = () => {
+    deleteMutation.mutate(todo.id);
+  };
 
   return (
     <div className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
       <div className="flex items-center gap-3 flex-1">
         <Checkbox
           checked={todo.completed}
-          onCheckedChange={() => toggleTodo(todo.id)}
+          onCheckedChange={handleToggle}
+          disabled={updateMutation.isPending}
         />
         <Link to={`/todos/${todo.id}`} className="flex-1">
           <span
@@ -34,9 +47,10 @@ export function TodoItem({ todo }: TodoItemProps) {
       <Button
         variant="destructive"
         size="sm"
-        onClick={() => removeTodo(todo.id)}
+        onClick={handleDelete}
+        disabled={deleteMutation.isPending}
       >
-        삭제
+        {deleteMutation.isPending ? "삭제 중..." : "삭제"}
       </Button>
     </div>
   );

@@ -1,22 +1,14 @@
-import { useEffect } from "react";
-import { useTodoStore } from "@/store/useTodoStore";
 import { TodoHeader } from "@/components/TodoHeader";
 import { TodoInput } from "@/components/TodoInput";
 import { TodoStats } from "@/components/TodoStats";
 import { TodoList } from "@/components/TodoList";
 import { ErrorAlert } from "@/components/ErrorAlert";
+import { useTodosQuery } from "@/hooks/useTodos";
 
 export function TodosPage() {
-  const { loading, todos, fetchTodos } = useTodoStore();
+  const { data: todos = [], isLoading, error } = useTodosQuery();
 
-  useEffect(() => {
-    if (todos.length === 0) {
-      fetchTodos();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (loading && todos.length === 0) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -27,13 +19,20 @@ export function TodosPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <ErrorAlert />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <TodoHeader />
-      <ErrorAlert />
       <TodoInput />
-      <TodoStats />
-      <TodoList />
+      <TodoStats todos={todos} />
+      <TodoList todos={todos} />
     </div>
   );
 }

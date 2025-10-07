@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTodoStore } from "@/store/useTodoStore";
 import { TodoItem } from "@/components/TodoItem";
 
-export function TodoList() {
-  const todos = useTodoStore((state) => state.todos);
+interface TodoListProps {
+  todos: any[];
+}
 
+export function TodoList({ todos }: TodoListProps) {
   return (
     <Card>
       <CardHeader>
