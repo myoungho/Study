@@ -1,6 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { loginSchema, type LoginInput } from "@/types/auth";
 import {
   Card,
   CardContent,
@@ -18,9 +21,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { loginSchema, type LoginInput } from "@/types/auth";
 
 export function LoginPage() {
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+  const [error, setError] = useState<string | null>(null);
+
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -30,8 +36,14 @@ export function LoginPage() {
   });
 
   const onSubmit = async (data: LoginInput) => {
-    console.log("Login data:", data);
-    // 9단계에서 실제 구현
+    try {
+      setError(null);
+      await login(data.email, data.password);
+      navigate("/todos"); // 로그인 성공 시 할 일 페이지로
+    } catch (error) {
+      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      console.error(error);
+    }
   };
 
   return (
@@ -42,6 +54,13 @@ export function LoginPage() {
           <CardDescription>계정에 로그인하세요</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* 에러 메시지 */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* 이메일 */}
@@ -82,9 +101,13 @@ export function LoginPage() {
                 )}
               />
 
-              {/* 버튼 */}
-              <Button type="submit" className="w-full">
-                로그인
+              {/* 로그인 버튼 */}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? "로그인 중..." : "로그인"}
               </Button>
 
               {/* 회원가입 링크 */}

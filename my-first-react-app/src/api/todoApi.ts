@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "./axios";
 
 const BASE_URL = "https://jsonplaceholder.typicode.com";
 
@@ -10,8 +11,8 @@ export interface Todo {
 }
 
 // 모든 할 일 가져오기
-export const getTodos = async (): Promise<Todo[]> => {
-  const response = await axios.get(`${BASE_URL}/todos`);
+export const getTodos = async () => {
+  const response = await api.get("/todos");
   return response.data;
 };
 
