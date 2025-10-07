@@ -1,62 +1,41 @@
 # 3단계: shadcn/ui 완전 가이드 (Tailwind CSS v4)
 
-## 목표
-Todo 앱을 shadcn/ui 컴포넌트로 업그레이드하여 프로페셔널한 UI 만들기
+## 소개
 
-**이 파일은 실제 설치 과정을 모두 기록한 완전한 가이드입니다. 복습 시 이 파일만 보고 따라하면 됩니다.**
+이 가이드는 실제 설치 과정에서 발생한 모든 문제와 해결 방법을 포함합니다.
+각 단계를 순서대로 따라하면 처음부터 끝까지 성공적으로 설치할 수 있습니다.
 
----
-
-## 사전 확인
-
-### 현재 프로젝트 상태
-- ✅ React + TypeScript 프로젝트 생성됨
-- ✅ Tailwind CSS v4.1.14 설치됨
-- ✅ 개발 서버 실행 중 (`npm run dev`)
-
-### package.json 확인
-```json
-{
-  "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
-  "devDependencies": {
-    "tailwindcss": "^4.1.14",
-    "@tailwindcss/cli": "^4.1.14",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6"
-  }
-}
-```
+**환경:**
+- Windows 11
+- Node.js v22.18.0
+- npm 10.9.3
+- Vite + React + TypeScript
+- Tailwind CSS v4.1.14
 
 ---
 
-## 1단계: TypeScript 경로 별칭 설정 (중요!)
+## Step 1: TypeScript 경로 별칭 설정
 
-shadcn/ui는 `@/components` 같은 경로 별칭을 사용합니다.
-**반드시 먼저 설정**해야 shadcn CLI가 정상 작동합니다.
-
-### 문제 상황
-```
-✖ Failed to read tsconfig.json. Make sure your project has a valid tsconfig.json
-```
-
-**원인:** shadcn/ui CLI가 `@` 경로 별칭을 tsconfig에서 못 찾음
-
-### 해결 방법
-
-Vite + TypeScript는 설정이 여러 파일로 분리되어 있습니다:
-- `tsconfig.json` (루트 설정)
-- `tsconfig.app.json` (앱 설정)
-- `tsconfig.node.json` (Node 설정)
-
-**두 곳 모두 수정**해야 합니다!
+### 왜 필요한가?
+shadcn/ui는 `@/components/ui/button` 같은 경로 별칭을 사용합니다.
+이 설정 없이 `npx shadcn@latest init`을 실행하면 오류가 발생합니다.
 
 ### 1-1. tsconfig.json 수정
 
-**파일 경로:** `tsconfig.json`
+**파일:** `tsconfig.json`
 
+**기존 내용:**
+```json
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+```
+
+**수정 후:**
 ```json
 {
   "files": [],
@@ -73,21 +52,11 @@ Vite + TypeScript는 설정이 여러 파일로 분리되어 있습니다:
 }
 ```
 
-**추가한 부분:**
-```json
-"compilerOptions": {
-  "baseUrl": ".",
-  "paths": {
-    "@/*": ["./src/*"]
-  }
-}
-```
-
 ### 1-2. tsconfig.app.json 수정
 
-**파일 경로:** `tsconfig.app.json`
+**파일:** `tsconfig.app.json`
 
-기존 `compilerOptions`에 다음을 추가:
+기존 `compilerOptions`에 다음을 **추가**:
 
 ```json
 {
@@ -101,45 +70,11 @@ Vite + TypeScript는 설정이 여러 파일로 분리되어 있습니다:
 }
 ```
 
-**전체 예시:**
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"]
-}
-```
-
 ### 1-3. vite.config.ts 수정
 
-**파일 경로:** `vite.config.ts`
+**파일:** `vite.config.ts`
 
-Vite는 tsconfig의 paths만으로는 부족하고, 빌드러가 이해하도록 `resolve.alias`도 설정해야 합니다.
-
-**기존:**
+**기존 내용:**
 ```typescript
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -167,124 +102,67 @@ export default defineConfig({
 
 **설명:**
 - `path` 모듈 import 추가
-- `resolve.alias` 설정 추가
-- `@/components/ui/button` → `src/components/ui/button`으로 해석됨
+- `resolve.alias` 설정으로 `@/` → `src/` 매핑
 
 ---
 
-## 2단계: Tailwind CSS v4 기본 설정
+## Step 2: shadcn/ui 초기화
 
-### 2-1. src/index.css 수정
+### 2-1. shadcn init 실행
 
-**파일 경로:** `src/index.css`
-
-Tailwind v4는 `@import` 방식을 사용합니다.
-
-```css
-@import "tailwindcss";
-
-/* 기본 스타일 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-}
-```
-
-**v3와의 차이:**
-```css
-/* v3 (구버전) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* v4 (신버전) - 훨씬 간단! */
-@import "tailwindcss";
-```
-
-### 2-2. tailwind.config.js 불필요
-
-v4에서는 기본적으로 설정 파일이 필요 없습니다!
-만약 있다면 삭제해도 됩니다. (shadcn이 생성할 수도 있지만 비워둬도 됨)
-
----
-
-## 3단계: shadcn/ui 초기화
-
-### 3-1. shadcn/ui init 실행
-
-터미널에서 다음 명령어 실행:
-
+터미널에서:
 ```bash
 npx shadcn@latest init
 ```
 
-### 3-2. 대화형 질문에 답하기
+### 2-2. 대화형 질문 답변
 
 #### Q1: 스타일 선택
 ```
-? Which style would you like to use? ›
+? Which style would you like to use?
 ❯ New York
   Default
 ```
-**선택:** `New York` (위쪽 화살표 + 엔터)
-
-**차이점:**
-- New York: 더 모던하고 미니멀한 디자인
-- Default: 클래식한 디자인
+**답변:** `New York` 선택 (화살표 위 + 엔터)
 
 #### Q2: 베이스 컬러
 ```
-? Which color would you like to use as base color? ›
+? Which color would you like to use as base color?
   Zinc
   Slate
   Stone
   Gray
 ❯ Neutral
-  Red
-  ...
 ```
-**선택:** `Neutral` (엔터)
-
-**설명:**
-- 회색 계열 색상 팔레트
-- Neutral = 중립적인 회색
+**답변:** `Neutral` 선택 (엔터)
 
 #### Q3: CSS 변수 사용
 ```
-? Would you like to use CSS variables for colors? ›
+? Would you like to use CSS variables for colors?
 ❯ yes
   no
 ```
-**선택:** `yes` (엔터)
-
-**이유:**
-- 테마를 쉽게 커스터마이징 가능
-- 다크 모드 지원 간편
+**답변:** `yes` (엔터)
 
 #### Q4: Tailwind prefix
 ```
-? Are you using a custom tailwind prefix eg. tw-? (Leave blank if not) ›
+? Are you using a custom tailwind prefix eg. tw-? (Leave blank if not)
 ```
-**선택:** 그냥 엔터 (prefix 없음)
+**답변:** 그냥 엔터 (빈칸)
 
-#### Q5: Global CSS 파일 위치
+#### Q5: Global CSS 파일
 ```
-? Where is your global CSS file? ›
+? Where is your global CSS file?
 ❯ src/index.css
 ```
-**선택:** 엔터 (기본값 사용)
+**답변:** 엔터 (기본값)
 
-#### Q6: Tailwind config 위치
+#### Q6: Tailwind config
 ```
-? Where is your tailwind.config.js located? ›
+? Where is your tailwind.config.js located?
 ❯ (leave blank if not exists)
 ```
-**선택:** 그냥 엔터 (v4는 config 파일 불필요)
+**답변:** 그냥 엔터
 
 **메시지:**
 ```
@@ -292,87 +170,52 @@ npx shadcn@latest init
 ```
 이건 정상! v4를 인식했다는 뜻입니다.
 
-#### Q7: Components import alias
+#### Q7: Components alias
 ```
-? Configure the import alias for components? ›
+? Configure the import alias for components?
 ❯ @/components
 ```
-**선택:** 엔터 (기본값 사용)
+**답변:** 엔터
 
-#### Q8: Utils import alias
+#### Q8: Utils alias
 ```
-? Configure the import alias for utils? ›
+? Configure the import alias for utils?
 ❯ @/lib/utils
 ```
-**선택:** 엔터 (기본값 사용)
+**답변:** 엔터
 
 #### Q9: React Server Components
 ```
-? Are you using React Server Components? ›
+? Are you using React Server Components?
   yes
 ❯ no
 ```
-**선택:** `no` (엔터) - Vite는 클라이언트 사이드
+**답변:** `no` (엔터)
 
-#### Q10: 설정 저장 확인
+#### Q10: 설정 저장
 ```
-? Write configuration to components.json. Proceed? ›
+? Write configuration to components.json. Proceed?
 ❯ yes
   no
 ```
-**선택:** `yes` (엔터)
+**답변:** `yes` (엔터)
 
-### 3-3. 설치 진행
+### 2-3. 설치 완료 확인
 
-```
-✔ Writing components.json.
-✔ Installing dependencies.
-✔ Created src/lib/utils.ts
-```
-
-### 3-4. 설치 완료 확인
-
-다음 파일/폴더가 생성되었는지 확인:
-
+다음 파일들이 생성되었는지 확인:
 ```
 my-first-react-app/
 ├── components.json          ← 새로 생성됨
 ├── src/
 │   ├── lib/
 │   │   └── utils.ts        ← 새로 생성됨
-│   └── components/         ← 폴더만 생성됨 (비어있음)
+│   ├── components/         ← 폴더만 생성됨 (비어있음)
+│   └── index.css           ← 자동으로 업데이트됨
 ```
 
-### 3-5. components.json 내용
+### 2-4. package.json 변경사항
 
-```json
-{
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-york",
-  "rsc": false,
-  "tsx": true,
-  "tailwind": {
-    "config": "",
-    "css": "src/index.css",
-    "baseColor": "neutral",
-    "cssVariables": true,
-    "prefix": ""
-  },
-  "iconLibrary": "lucide",
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
-  }
-}
-```
-
-### 3-6. package.json 변경사항
-
-자동으로 다음 패키지들이 설치됩니다:
-
+자동으로 설치된 패키지:
 ```json
 {
   "dependencies": {
@@ -387,20 +230,77 @@ my-first-react-app/
 }
 ```
 
-**설명:**
-- `class-variance-authority`: variant 스타일 관리
-- `clsx`: className 조건부 결합
-- `lucide-react`: 아이콘 라이브러리
-- `tailwind-merge`: Tailwind 클래스 병합
-- `tw-animate-css`: 애니메이션
+---
+
+## Step 3: Tailwind PostCSS 플러그인 설치 (중요!)
+
+### 문제 상황
+Tailwind v4에서는 PostCSS 플러그인이 별도 패키지로 분리되었습니다.
+이 단계를 건너뛰면 **Tailwind CSS가 전혀 작동하지 않습니다!**
+
+### 3-1. @tailwindcss/postcss 설치
+
+터미널에서:
+```bash
+npm install -D @tailwindcss/postcss
+```
+
+### 3-2. vite.config.ts 업데이트
+
+**파일:** `vite.config.ts`
+
+**현재 상태:**
+```typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
+```
+
+**수정 후:**
+```typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import tailwindcss from "@tailwindcss/postcss";
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [tailwindcss()],
+    },
+  },
+});
+```
+
+**추가된 부분:**
+- `import tailwindcss from "@tailwindcss/postcss";`
+- `css: { postcss: { plugins: [tailwindcss()] } }`
 
 ---
 
-## 4단계: index.css 업데이트
+## Step 4: index.css 수정
 
-shadcn/ui init이 자동으로 `src/index.css`를 업데이트합니다.
+### 4-1. index.css 전체 교체
 
-### 4-1. 업데이트된 index.css
+**파일:** `src/index.css`
+
+shadcn init이 자동으로 CSS 변수를 추가했지만, 일부 설정이 문제를 일으킬 수 있습니다.
+다음 내용으로 **완전히 교체**:
 
 ```css
 @import "tailwindcss";
@@ -409,132 +309,94 @@ shadcn/ui init이 자동으로 `src/index.css`를 업데이트합니다.
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* shadcn/ui CSS 변수 */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
 }
 
-/* 다크 모드 변수 */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
 }
 
-/* Tailwind v4 테마 */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
 }
 
-/* 베이스 스타일 */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -543,26 +405,30 @@ shadcn/ui init이 자동으로 `src/index.css`를 업데이트합니다.
 ```
 
 **주요 포인트:**
-- `@import "tw-animate-css"`: 애니메이션 지원
-- `@custom-variant dark`: 다크 모드 variant
-- `@theme inline`: Tailwind v4 테마 정의
-- `oklch()`: 최신 CSS 색상 공간 (더 정확한 색상)
+- HSL 색상 값 사용 (oklch 대신)
+- `@theme inline`으로 Tailwind v4 테마 정의
+- `@layer base`로 기본 스타일 적용
 
 ---
 
-## 5단계: 개발 서버 재시작
+## Step 5: App.css 비우기
 
-설정 파일을 수정했으므로 개발 서버를 재시작해야 합니다.
+### 문제 상황
+기본 `App.css`에는 `#root { text-align: center; }` 같은 스타일이 있어서
+레이아웃이 깨집니다.
 
-터미널에서:
-1. `Ctrl + C` (서버 중지)
-2. `npm run dev` (서버 재시작)
+### 5-1. App.css 수정
+
+**파일:** `src/App.css`
+
+**내용을 전부 삭제하고:**
+```css
+/* App.css - shadcn/ui 사용으로 비움 */
+```
 
 ---
 
-## 6단계: shadcn/ui 컴포넌트 설치
-
-이제 필요한 UI 컴포넌트들을 설치합니다.
+## Step 6: shadcn/ui 컴포넌트 설치
 
 ### 6-1. Button 컴포넌트
 
@@ -570,7 +436,7 @@ shadcn/ui init이 자동으로 `src/index.css`를 업데이트합니다.
 npx shadcn@latest add button
 ```
 
-**설치 과정:**
+**결과:**
 ```
 ✔ Checking registry...
 ✔ Installing dependencies...
@@ -583,7 +449,10 @@ npx shadcn@latest add button
 npx shadcn@latest add input
 ```
 
-**생성:** `src/components/ui/input.tsx`
+**결과:**
+```
+✔ Created src/components/ui/input.tsx
+```
 
 ### 6-3. Checkbox 컴포넌트
 
@@ -591,12 +460,11 @@ npx shadcn@latest add input
 npx shadcn@latest add checkbox
 ```
 
-**추가 의존성 자동 설치:**
+**결과:**
 ```
 ✔ Installing @radix-ui/react-checkbox...
+✔ Created src/components/ui/checkbox.tsx
 ```
-
-**생성:** `src/components/ui/checkbox.tsx`
 
 ### 6-4. Card 컴포넌트
 
@@ -604,35 +472,37 @@ npx shadcn@latest add checkbox
 npx shadcn@latest add card
 ```
 
-**생성:** `src/components/ui/card.tsx`
+**결과:**
+```
+✔ Created src/components/ui/card.tsx
+```
 
 ### 6-5. 설치 확인
-
-`src/components/ui/` 폴더에 다음 파일들이 생성되었는지 확인:
 
 ```
 src/
 └── components/
     └── ui/
-        ├── button.tsx       ← 버튼 컴포넌트
-        ├── input.tsx        ← 입력창 컴포넌트
-        ├── checkbox.tsx     ← 체크박스 컴포넌트
-        └── card.tsx         ← 카드 컴포넌트
+        ├── button.tsx
+        ├── input.tsx
+        ├── checkbox.tsx
+        └── card.tsx
 ```
 
-**중요:** 이 파일들은 일반 React 컴포넌트입니다!
-- npm 패키지가 아닌 프로젝트 코드
-- 직접 수정 가능
-- 완전한 커스터마이징 가능
-- 이것이 shadcn/ui의 핵심 철학!
+**중요:**
+- 이 파일들은 npm 패키지가 아닌 **프로젝트 코드**입니다
+- 언제든지 수정 가능
+- shadcn/ui의 핵심 철학!
 
 ---
 
-## 7단계: App.tsx를 shadcn/ui로 리팩토링
+## Step 7: App.tsx 작성
 
-### 7-1. 전체 코드 교체
+### 7-1. 전체 코드
 
-`src/App.tsx` 파일을 다음 코드로 **완전히 교체**:
+**파일:** `src/App.tsx`
+
+기존 내용을 다음으로 **완전히 교체**:
 
 ```tsx
 import { useState } from "react";
@@ -792,249 +662,165 @@ function App() {
 export default App;
 ```
 
-### 7-2. 주요 변경사항
+---
 
-#### 1. Import 문
-```tsx
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, ... } from "@/components/ui/card";
-```
-- `@/`는 `src/`를 의미
-- 경로 별칭 사용
+## Step 8: 개발 서버 재시작
 
-#### 2. 인라인 스타일 → Tailwind + shadcn
+### 8-1. 캐시 삭제 (선택사항)
 
-**Before:**
-```tsx
-<button
-  style={{
-    padding: '10px 20px',
-    fontSize: '16px',
-    cursor: 'pointer'
-  }}
->
-  추가
-</button>
+문제가 있을 경우:
+```bash
+# PowerShell에서
+Remove-Item -Recurse -Force node_modules/.vite
 ```
 
-**After:**
-```tsx
-<Button>추가</Button>
+### 8-2. 서버 재시작
+
+터미널에서:
+```bash
+# Ctrl + C로 서버 중지
+npm run dev
 ```
 
-#### 3. Button Props
-```tsx
-<Button variant="destructive" size="sm">
-  삭제
-</Button>
-```
-- `variant`: default, destructive, outline, ghost, link
-- `size`: default, sm, lg, icon
+### 8-3. 브라우저 강력 새로고침
 
-#### 4. Card 구조
-```tsx
-<Card>
-  <CardHeader>
-    <CardTitle>제목</CardTitle>
-    <CardDescription>설명</CardDescription>
-  </CardHeader>
-  <CardContent>
-    내용
-  </CardContent>
-</Card>
-```
-
-#### 5. Checkbox 사용
-```tsx
-<Checkbox
-  checked={todo.isCompleted}
-  onCheckedChange={() => toggleTodo(todo.id)}
-/>
-```
-- `onCheckedChange`: 클릭 이벤트 핸들러
-- Radix UI 기반이라 접근성 좋음
+브라우저에서:
+- `Ctrl + Shift + R` (Windows)
+- 또는 `Ctrl + F5`
 
 ---
 
-## 8단계: 최종 테스트
+## Step 9: 최종 확인
 
-### 8-1. 브라우저 확인
+### 브라우저에서 확인할 것들
 
-`http://localhost:5173` 접속
+1. **배경**
+   - ✨ 파란색 → 보라색 그라데이션
 
-**확인 사항:**
-- ✨ 그라데이션 배경 (파란색 → 보라색)
-- 📦 깔끔한 카드 레이아웃
-- 🎨 통일된 디자인 시스템
-- 🖱️ 버튼 호버 효과 (부드러운 애니메이션)
-- ✅ 체크박스 체크 애니메이션
-- 🗑️ 빨간색 삭제 버튼
-- 🔄 전환 효과 (transition)
+2. **카드 레이아웃**
+   - 📦 4개의 카드 (헤더, 입력, 통계, 목록)
+   - 그림자와 둥근 모서리
 
-### 8-2. 기능 테스트
-
-1. **할 일 추가**
-   - 입력창에 "장보기" 입력
-   - 추가 버튼 클릭 또는 엔터
-   - 목록에 추가되는지 확인
-   - 통계 업데이트 확인
-
-2. **체크박스**
-   - 체크박스 클릭
-   - 텍스트에 취소선 생기는지 확인
-   - 완료 개수 증가 확인
-   - 미완료 개수 감소 확인
-
-3. **삭제**
-   - 삭제 버튼 클릭
-   - 부드러운 애니메이션과 함께 사라지는지
-   - 통계 업데이트 확인
+3. **기능 테스트**
+   - ✅ 할 일 추가 (버튼 또는 엔터)
+   - ✅ 체크박스 클릭 (완료 처리)
+   - ✅ 삭제 버튼 (빨간색)
+   - ✅ 통계 업데이트
 
 4. **반응형**
-   - 브라우저 창 크기 조절
-   - 모바일 화면에서도 잘 보이는지 확인
+   - 📱 창 크기 조절 시 자동 조정
 
 ---
 
 ## 문제 해결
 
-### 문제 1: `Cannot find module '@/components/ui/button'`
+### 문제 1: Tailwind CSS가 작동 안 함
 
-**원인:** 경로 별칭 설정이 안 됨
-
-**해결:**
-1. `tsconfig.json`에 `baseUrl`과 `paths` 추가
-2. `tsconfig.app.json`에도 동일하게 추가
-3. `vite.config.ts`에 `alias` 설정 추가
-4. 개발 서버 재시작: `Ctrl+C` → `npm run dev`
-
-### 문제 2: 스타일이 적용 안 됨
-
-**원인:** Tailwind CSS가 로드되지 않음
+**증상:**
+- 배경색이 흰색
+- 카드에 스타일 없음
+- 체크박스 안 보임
 
 **해결:**
-1. `src/index.css`에 `@import "tailwindcss"` 확인
-2. shadcn CSS 변수 추가 확인
-3. 브라우저 캐시 삭제 (`Ctrl+Shift+R`)
-4. 개발 서버 재시작
+1. `@tailwindcss/postcss` 설치 확인
+   ```bash
+   npm install -D @tailwindcss/postcss
+   ```
 
-### 문제 3: Checkbox가 클릭 안 됨
+2. `vite.config.ts`에 PostCSS 설정 확인
+   ```typescript
+   css: {
+     postcss: {
+       plugins: [tailwindcss()],
+     },
+   }
+   ```
 
-**원인:** `@radix-ui/react-checkbox` 미설치
+3. 개발 서버 재시작
+
+### 문제 2: 경로 별칭 에러
+
+**증상:**
+```
+Cannot find module '@/components/ui/button'
+```
 
 **해결:**
+1. `tsconfig.json`과 `tsconfig.app.json` 둘 다 수정
+2. `vite.config.ts`에 alias 설정
+3. 개발 서버 재시작
+
+### 문제 3: 레이아웃이 이상함
+
+**증상:**
+- 모든 요소가 가운데 정렬
+- 카드가 세로로 배치
+
+**해결:**
+1. `App.css` 내용 삭제
+2. `index.css`의 `:root` 스타일 확인
+
+### 문제 4: index.css가 로드 안 됨
+
+**증상:**
+- 브라우저 Network 탭에 `index.css` 없음
+- content.css만 로드됨
+
+**해결:**
+1. Vite 캐시 삭제
+   ```bash
+   Remove-Item -Recurse -Force node_modules/.vite
+   ```
+
+2. 서버 재시작
+
+---
+
+## 핵심 체크리스트
+
+설치 완료를 위한 필수 항목:
+
+- [ ] **Step 1:** TypeScript 경로 별칭 (tsconfig.json, tsconfig.app.json, vite.config.ts)
+- [ ] **Step 2:** shadcn init 완료 (components.json 생성)
+- [ ] **Step 3:** @tailwindcss/postcss 설치 및 vite.config.ts 설정
+- [ ] **Step 4:** index.css 수정 (CSS 변수)
+- [ ] **Step 5:** App.css 비우기
+- [ ] **Step 6:** 4개 컴포넌트 설치 (button, input, checkbox, card)
+- [ ] **Step 7:** App.tsx 작성
+- [ ] **Step 8:** 개발 서버 재시작
+- [ ] **Step 9:** 브라우저 확인
+
+---
+
+## 주요 명령어 요약
+
 ```bash
-npm install @radix-ui/react-checkbox
-```
-
-### 문제 4: TypeScript 에러
-
-**에러:**
-```
-Cannot find module '@/lib/utils' or its corresponding type declarations
-```
-
-**해결:**
-```bash
+# shadcn 초기화
 npx shadcn@latest init
-```
-다시 실행해서 `src/lib/utils.ts` 생성
 
-### 문제 5: shadcn init 실패
+# PostCSS 플러그인 설치 (필수!)
+npm install -D @tailwindcss/postcss
 
-**에러:**
-```
-✖ Failed to read tsconfig.json
-```
+# 컴포넌트 설치
+npx shadcn@latest add button
+npx shadcn@latest add input
+npx shadcn@latest add checkbox
+npx shadcn@latest add card
 
-**해결:**
-1단계의 TypeScript 경로 별칭 설정을 다시 확인
-- `tsconfig.json`
-- `tsconfig.app.json`
-둘 다 수정했는지 확인!
+# 캐시 삭제 (문제 발생 시)
+Remove-Item -Recurse -Force node_modules/.vite
 
----
-
-## Tailwind CSS 클래스 치트시트
-
-### 레이아웃
-```
-flex                 Flexbox
-grid                 Grid
-block                Block
-hidden               숨김
-
-items-center         수직 중앙
-justify-between      양 끝 정렬
-gap-2                간격 0.5rem
-gap-4                간격 1rem
-```
-
-### 간격
-```
-p-4                  padding 1rem
-px-4                 padding-left/right 1rem
-py-4                 padding-top/bottom 1rem
-pt-6                 padding-top 1.5rem
-m-4                  margin 1rem
-mb-6                 margin-bottom 1.5rem
-space-y-2            자식 요소 세로 간격
-```
-
-### 크기
-```
-w-full               width 100%
-h-screen             height 100vh
-max-w-2xl            max-width 42rem
-min-h-screen         min-height 100vh
-```
-
-### 색상
-```
-bg-blue-50           매우 연한 파란색
-bg-blue-600          진한 파란색
-text-gray-900        거의 검은색 텍스트
-text-gray-500        중간 회색 텍스트
-border-gray-200      연한 회색 테두리
-```
-
-### 텍스트
-```
-text-sm              작은 글씨 (0.875rem)
-text-xl              큰 글씨 (1.25rem)
-text-2xl             매우 큰 글씨 (1.5rem)
-text-3xl             초대형 글씨 (1.875rem)
-font-bold            굵게
-text-center          중앙 정렬
-line-through         취소선
-```
-
-### 효과
-```
-rounded-lg           둥근 모서리
-shadow-md            그림자
-hover:shadow-lg      호버 시 큰 그림자
-transition-shadow    부드러운 전환
-```
-
-### 그라데이션
-```
-bg-gradient-to-r     좌 → 우
-bg-gradient-to-br    좌상 → 우하
-from-blue-50         시작 색
-to-indigo-100        끝 색
+# 서버 재시작
+npm run dev
 ```
 
 ---
 
-## C# 개발자를 위한 비교
+## C# 개발자를 위한 참고사항
 
-### Import vs Using
-
+### 경로 별칭
 **TypeScript:**
-```tsx
+```typescript
 import { Button } from "@/components/ui/button"
 ```
 
@@ -1043,135 +829,50 @@ import { Button } from "@/components/ui/button"
 using MyProject.Components.UI;
 ```
 
-### Props vs Properties
-
+### Props
 **TypeScript:**
 ```tsx
-<Button variant="destructive" size="sm">
-  삭제
-</Button>
+<Button variant="destructive" size="sm">삭제</Button>
 ```
 
-**C# (WPF/XAML):**
+**C# (WPF):**
 ```xml
-<Button Style="{StaticResource DestructiveButton}"
-        Size="Small">
-  삭제
-</Button>
+<Button Style="{StaticResource DestructiveButton}" Size="Small">삭제</Button>
 ```
 
-### Tailwind vs CSS Classes
-
-**TypeScript (Tailwind):**
-```tsx
-<div className="flex items-center gap-3">
+### CSS 변수
+**Tailwind:**
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+}
 ```
 
-**C# (Blazor):**
-```csharp
-<div class="flex items-center gap-3">
+**C# (XAML):**
+```xml
+<SolidColorBrush x:Key="Primary" Color="#1a1a1a"/>
 ```
-
----
-
-## 추가 학습 자료
-
-### 공식 문서
-- **shadcn/ui:** https://ui.shadcn.com
-- **Tailwind CSS v4:** https://tailwindcss.com/docs
-- **Radix UI:** https://www.radix-ui.com
-- **Vite:** https://vitejs.dev
-
-### 다른 shadcn 컴포넌트 살펴보기
-
-```bash
-# 모달
-npx shadcn@latest add dialog
-
-# 드롭다운
-npx shadcn@latest add select
-
-# 뱃지
-npx shadcn@latest add badge
-
-# 알림
-npx shadcn@latest add alert
-
-# 폼
-npx shadcn@latest add form
-
-# 테이블
-npx shadcn@latest add table
-
-# 탭
-npx shadcn@latest add tabs
-
-# 토스트 알림
-npx shadcn@latest add toast
-```
-
-### 유용한 도구
-- **Tailwind 색상 팔레트:** https://tailwindcss.com/docs/customizing-colors
-- **shadcn 테마 생성기:** https://ui.shadcn.com/themes
-- **Tailwind 플레이그라운드:** https://play.tailwindcss.com
 
 ---
 
 ## 다음 단계
 
-3단계를 완료했다면 **4단계: API 연동**으로 진행합니다.
+3단계 완료 후 **4단계: API 연동**으로 진행합니다.
 
 4단계에서 배울 내용:
 - fetch/axios로 REST API 호출
-- JSONPlaceholder 또는 실제 백엔드 API 연동
-- 로딩 상태 관리 (Loading Spinner)
+- 로딩 상태 관리
 - 에러 핸들링
 - async/await 패턴
-- useEffect Hook 사용
-
----
-
-## 실습 체크리스트
-
-완료한 항목에 체크:
-
-**설정:**
-- [ ] `tsconfig.json`에 경로 별칭 추가
-- [ ] `tsconfig.app.json`에 경로 별칭 추가
-- [ ] `vite.config.ts`에 alias 설정
-- [ ] `src/index.css`에 `@import "tailwindcss"` 추가
-
-**shadcn/ui 설치:**
-- [ ] `npx shadcn@latest init` 실행
-- [ ] 모든 질문에 답변 완료
-- [ ] `components.json` 파일 생성 확인
-- [ ] `src/lib/utils.ts` 파일 생성 확인
-
-**컴포넌트 설치:**
-- [ ] Button 컴포넌트 설치
-- [ ] Input 컴포넌트 설치
-- [ ] Checkbox 컴포넌트 설치
-- [ ] Card 컴포넌트 설치
-- [ ] `src/components/ui/` 폴더에 파일들 확인
-
-**코드 작성:**
-- [ ] `App.tsx` 코드 교체
-- [ ] 개발 서버 재시작
-- [ ] 브라우저에서 새 디자인 확인
-
-**테스트:**
-- [ ] 할 일 추가 기능
-- [ ] 체크박스 기능
-- [ ] 삭제 기능
-- [ ] 통계 업데이트
-- [ ] 반응형 확인
+- useEffect Hook
 
 ---
 
 **작성일:** 2025-10-07
-**Tailwind 버전:** v4.1.14
+**테스트 환경:** Windows 11, Node.js v22.18.0
+**Tailwind CSS:** v4.1.14
 **shadcn/ui 스타일:** New York
 **소요 시간:** 2-3시간
 **난이도:** ⭐⭐⭐☆☆
 
-**이 파일 하나로 처음부터 끝까지 shadcn/ui 설치 및 적용을 완료할 수 있습니다!**
+**이 가이드는 실제 설치 과정에서 발생한 모든 문제를 해결한 완전한 버전입니다!**

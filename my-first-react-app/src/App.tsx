@@ -1,5 +1,15 @@
 import { useState } from "react";
 import "./App.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface TodoItem {
   id: number;
@@ -35,99 +45,108 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>나의 Todo 앱</h1>
-      <div style={{ margin: "20px" }}>
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addTodo()}
-          placeholder="할 일을 입력하세요."
-          style={{
-            padding: "10px",
-            width: "300px",
-            fontSize: "16px",
-            marginRight: "10px",
-          }}
-        />
-        <button
-          onClick={addTodo}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-        >
-          추가
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-2xl mx-auto">
+        {/* 헤더 카드 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center">
+              나의 Todo 앱
+            </CardTitle>
+            <CardDescription className="text-center">
+              할 일을 추가하고 관리해보세요
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
-      <div
-        style={{
-          margin: "20px",
-          padding: "10px",
-          backgroundColor: "#f5f5f5",
-          borderRadius: "5px",
-        }}
-      >
-        <p>전체: {todos.length}개</p>
-        <p>완료: {todos.filter((todo) => todo.isCompleted).length}개</p>
-        <p>미완료: {todos.filter((todo) => !todo.isCompleted).length}개</p>
-      </div>
+        {/* 입력 카드 */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addTodo()}
+                placeholder="할 일을 입력하세요"
+                className="flex-1"
+              />
+              <Button onClick={addTodo}>추가</Button>
+            </div>
+          </CardContent>
+        </Card>
 
-      <div style={{ margin: "20px" }}>
-        {todos.length === 0 ? (
-          <p>할 일이 없습니다.</p>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {todos.map((todo) => (
-              <li
-                key={todo.id}
-                style={{
-                  padding: "10px",
-                  margin: "5px 0",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="checkbox"
-                    checked={todo.isCompleted}
-                    onChange={() => toggleTodo(todo.id)}
-                  />
-                  <span
-                    style={{
-                      textDecoration: todo.isCompleted
-                        ? "line-through"
-                        : "none",
-                      color: todo.isCompleted ? "#888" : "#000",
-                    }}
+        {/* 통계 카드 */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-blue-600">
+                  {todos.length}
+                </p>
+                <p className="text-sm text-gray-600">전체</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-green-600">
+                  {todos.filter((todo) => todo.isCompleted).length}
+                </p>
+                <p className="text-sm text-gray-600">완료</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-orange-600">
+                  {todos.filter((todo) => !todo.isCompleted).length}
+                </p>
+                <p className="text-sm text-gray-600">미완료</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Todo 목록 카드 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>할 일 목록</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {todos.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">
+                할 일이 없습니다.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {todos.map((todo) => (
+                  <div
+                    key={todo.id}
+                    className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition-shadow"
                   >
-                    {todo.text}
-                  </span>
-                </div>
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  style={{
-                    padding: "5px 10px",
-                    backgroundColor: "#ff4444",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                  }}
-                >
-                  삭제
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={todo.isCompleted}
+                        onCheckedChange={() => toggleTodo(todo.id)}
+                      />
+                      <span
+                        className={`${
+                          todo.isCompleted
+                            ? "line-through text-gray-400"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        {todo.text}
+                      </span>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteTodo(todo.id)}
+                    >
+                      삭제
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
