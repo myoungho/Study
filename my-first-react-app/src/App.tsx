@@ -6,6 +6,8 @@ import { TodoDetailPage } from "./pages/TodoDetailPage";
 import { AboutPage } from "./pages/AboutPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { TodoEditPage } from "./pages/TodoEditPage";
+import { SignupPage } from "./pages/SignupPage";
 import "./App.css";
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="todos" element={<TodosPage />} />
           <Route path="todos/:id" element={<TodoDetailPage />} />
+          <Route path="todos/:id/edit" element={<TodoEditPage />} />
+          <Route path="signup" element={<SignupPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="login" element={<LoginPage />} />
 

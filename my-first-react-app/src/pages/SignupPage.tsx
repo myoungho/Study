@@ -18,19 +18,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { loginSchema, type LoginInput } from "@/types/auth";
+import { signupSchema, type SignupInput } from "@/types/auth";
 
-export function LoginPage() {
-  const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+export function SignupPage() {
+  const form = useForm<SignupInput>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
+      name: "",
     },
   });
 
-  const onSubmit = async (data: LoginInput) => {
-    console.log("Login data:", data);
+  const onSubmit = async (data: SignupInput) => {
+    console.log("Signup data:", data);
     // 9단계에서 실제 구현
   };
 
@@ -38,12 +40,27 @@ export function LoginPage() {
     <div className="max-w-md mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>로그인</CardTitle>
-          <CardDescription>계정에 로그인하세요</CardDescription>
+          <CardTitle>회원가입</CardTitle>
+          <CardDescription>새 계정을 만드세요</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* 이름 */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이름</FormLabel>
+                    <FormControl>
+                      <Input placeholder="홍길동" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* 이메일 */}
               <FormField
                 control={form.control}
@@ -82,16 +99,35 @@ export function LoginPage() {
                 )}
               />
 
+              {/* 비밀번호 확인 */}
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호 확인</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* 버튼 */}
               <Button type="submit" className="w-full">
-                로그인
+                회원가입
               </Button>
 
-              {/* 회원가입 링크 */}
+              {/* 로그인 링크 */}
               <p className="text-center text-sm text-gray-600">
-                계정이 없으신가요?{" "}
-                <Link to="/signup" className="text-blue-600 hover:underline">
-                  회원가입
+                이미 계정이 있으신가요?{" "}
+                <Link to="/login" className="text-blue-600 hover:underline">
+                  로그인
                 </Link>
               </p>
             </form>

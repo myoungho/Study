@@ -69,6 +69,9 @@ export function TodoDetailPage() {
             <Link to="/todos">
               <Button variant="outline">← 목록으로</Button>
             </Link>
+            <Link to={`/todos/${id}/edit`}>
+              <Button>수정</Button>
+            </Link>
             <Button variant="destructive" onClick={handleDelete}>
               삭제
             </Button>
