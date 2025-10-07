@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTodos, createTodo, updateTodo, deleteTodo } from "@/api/todoApi";
+import type { Todo } from "@/types/todo";
 
 // Query Keys
 export const todoKeys = {
@@ -28,7 +28,7 @@ export function useTodoQuery(id: number) {
     queryKey: todoKeys.detail(id),
     queryFn: async () => {
       const todos = await getTodos();
-      return todos.find((todo) => todo.id === id);
+      return todos.find((todo: Todo) => todo.id === id);
     },
     enabled: !!id, // id가 있을 때만 실행
   });
@@ -63,8 +63,8 @@ export function useUpdateTodoMutation() {
       const previousTodos = queryClient.getQueryData(todoKeys.lists());
 
       // 낙관적 업데이트
-      queryClient.setQueryData(todoKeys.lists(), (old: any) =>
-        old?.map((todo: any) =>
+      queryClient.setQueryData(todoKeys.lists(), (old: Todo[] | undefined) =>
+        old?.map((todo: Todo) =>
           todo.id === id ? { ...todo, completed } : todo
         )
       );
@@ -74,6 +74,8 @@ export function useUpdateTodoMutation() {
     },
     // 에러 시 롤백
     onError: (err, variables, context) => {
+      console.error(err);
+      console.log(variables);
       if (context?.previousTodos) {
         queryClient.setQueryData(todoKeys.lists(), context.previousTodos);
       }
@@ -96,13 +98,15 @@ export function useDeleteTodoMutation() {
       await queryClient.cancelQueries({ queryKey: todoKeys.lists() });
       const previousTodos = queryClient.getQueryData(todoKeys.lists());
 
-      queryClient.setQueryData(todoKeys.lists(), (old: any) =>
-        old?.filter((todo: any) => todo.id !== id)
+      queryClient.setQueryData(todoKeys.lists(), (old: Todo[] | undefined) =>
+        old?.filter((todo: Todo) => todo.id !== id)
       );
 
       return { previousTodos };
     },
     onError: (err, variables, context) => {
+      console.error(err);
+      console.log(variables);
       if (context?.previousTodos) {
         queryClient.setQueryData(todoKeys.lists(), context.previousTodos);
       }

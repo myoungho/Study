@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
 });
 

@@ -36,6 +36,7 @@ export const useAuthStore = create<AuthStore>()(
           const dummyUser = {
             id: "1",
             email: email,
+            password: password,
             name: "테스트 사용자",
           };
           const dummyToken = "dummy_jwt_token_" + Date.now();
@@ -60,6 +61,7 @@ export const useAuthStore = create<AuthStore>()(
           const dummyUser = {
             id: "1",
             email: email,
+            password: password,
             name: name,
           };
           const dummyToken = "dummy_jwt_token_" + Date.now();
