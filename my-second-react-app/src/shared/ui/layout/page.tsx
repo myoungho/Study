@@ -1,10 +1,10 @@
-﻿import type { HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/shared/lib/cn";
 
 export function PageContainer({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10", className)}
+      className={cn("mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-16", className)}
       {...props}
     />
   );

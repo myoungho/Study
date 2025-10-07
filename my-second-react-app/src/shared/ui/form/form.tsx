@@ -18,7 +18,7 @@ export function FormLabel({ className, ...props }: LabelHTMLAttributes<HTMLLabel
 
 export function FormDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-xs text-slate-500 dark:text-slate-400", className)} {...props} />
+    <p className={cn("text-xs text-muted", className)} {...props} />
   );
 }
 
