@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTodoStore } from "@/store/useTodoStore";
-import { TodoItem } from "./TodoItem";
+import { TodoItem } from "@/components/TodoItem";
 
 export function TodoList() {
   const todos = useTodoStore((state) => state.todos);

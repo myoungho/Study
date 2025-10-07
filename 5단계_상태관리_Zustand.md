@@ -1,9 +1,11 @@
 # 5단계: 상태 관리 (Zustand)
 
 ## 목표
+
 전역 상태 관리 라이브러리 Zustand를 사용하여 애플리케이션 상태를 효율적으로 관리
 
 **학습 내용:**
+
 - 전역 상태 관리의 필요성
 - Zustand 라이브러리
 - Store 생성
@@ -12,6 +14,7 @@
 - 컴포넌트 분리
 
 **환경:**
+
 - Windows 11
 - Zustand v4 (최신 버전)
 
@@ -22,6 +25,7 @@
 ### 현재 문제점
 
 **Props Drilling (프롭 드릴링):**
+
 ```
 App (todos, loading, error)
   ├─ Header (전달만 함)
@@ -44,6 +48,7 @@ Store (todos, loading, error, actions)
 ### C# 개발자를 위한 비교
 
 **C# (Singleton Pattern):**
+
 ```csharp
 public class TodoStore
 {
@@ -59,10 +64,11 @@ TodoStore.Instance.AddTodo(newTodo);
 ```
 
 **TypeScript (Zustand):**
+
 ```typescript
 const useTodoStore = create((set) => ({
   todos: [],
-  addTodo: (todo) => set((state) => ({ todos: [...state.todos, todo] }))
+  addTodo: (todo) => set((state) => ({ todos: [...state.todos, todo] })),
 }));
 
 // 어디서든 접근
@@ -76,16 +82,17 @@ const { todos, addTodo } = useTodoStore();
 ### 주요 라이브러리
 
 | 라이브러리 | 크기 | 복잡도 | Boilerplate | 학습 곡선 |
-|-----------|------|--------|-------------|-----------|
-| Redux | 큼 | 높음 | 많음 | 높음 |
-| MobX | 중간 | 중간 | 중간 | 중간 |
-| Zustand | 작음 | 낮음 | 적음 | 낮음 ✅ |
-| Jotai | 작음 | 낮음 | 적음 | 중간 |
-| Recoil | 중간 | 중간 | 중간 | 중간 |
+| ---------- | ---- | ------ | ----------- | --------- |
+| Redux      | 큼   | 높음   | 많음        | 높음      |
+| MobX       | 중간 | 중간   | 중간        | 중간      |
+| Zustand    | 작음 | 낮음   | 적음        | 낮음 ✅   |
+| Jotai      | 작음 | 낮음   | 적음        | 중간      |
+| Recoil     | 중간 | 중간   | 중간        | 중간      |
 
 ### Zustand를 선택하는 이유
 
 **장점:**
+
 - ✅ 매우 간단한 API
 - ✅ 적은 보일러플레이트
 - ✅ TypeScript 완벽 지원
@@ -94,6 +101,7 @@ const { todos, addTodo } = useTodoStore();
 - ✅ DevTools 지원
 
 **단점:**
+
 - 대규모 애플리케이션에서는 Redux가 더 나을 수 있음
 - 하지만 대부분의 경우 충분함!
 
@@ -104,6 +112,7 @@ const { todos, addTodo } = useTodoStore();
 ### 3-1. 패키지 설치
 
 터미널에서:
+
 ```bash
 npm install zustand
 ```
@@ -111,6 +120,7 @@ npm install zustand
 ### 3-2. 설치 확인
 
 `package.json`:
+
 ```json
 {
   "dependencies": {
@@ -126,6 +136,7 @@ npm install zustand
 ### 4-1. store 폴더 생성
 
 프로젝트 구조:
+
 ```
 src/
 ├── api/
@@ -237,21 +248,25 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
 **주요 개념:**
 
 **create 함수:**
+
 - Zustand store를 생성
 - `(set, get) => ({...})` 패턴
 
 **set 함수:**
+
 - 상태를 업데이트
 - `set({ todos: newTodos })` - 전체 교체
 - `set((state) => ({ todos: [...state.todos, newTodo] }))` - 현재 상태 사용
 
 **get 함수:**
+
 - 현재 상태를 읽기
 - `const todos = get().todos`
 
 ### C# 비교
 
 **TypeScript (Zustand):**
+
 ```typescript
 export const useTodoStore = create<TodoStore>((set, get) => ({
   todos: [],
@@ -259,11 +274,12 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
     const newTodo = await createTodo(title);
     const current = get().todos;
     set({ todos: [newTodo, ...current] });
-  }
+  },
 }));
 ```
 
 **C#:**
+
 ```csharp
 public class TodoStore
 {
@@ -288,12 +304,14 @@ public class TodoStore
 ### 5-1. Import 수정
 
 **기존:**
+
 ```typescript
 import { useState, useEffect } from "react";
 import { getTodos, createTodo, updateTodo, deleteTodo } from "./api/todoApi";
 ```
 
 **수정 후:**
+
 ```typescript
 import { useEffect } from "react";
 import { useTodoStore } from "./store/useTodoStore";
@@ -302,6 +320,7 @@ import { useTodoStore } from "./store/useTodoStore";
 ### 5-2. 상태 제거 및 Store 사용
 
 **기존:**
+
 ```typescript
 const [todos, setTodos] = useState<TodoItem[]>([]);
 const [inputText, setInputText] = useState<string>("");
@@ -310,18 +329,30 @@ const [error, setError] = useState<string | null>(null);
 ```
 
 **수정 후:**
+
 ```typescript
-const { todos, loading, error, fetchTodos, addTodo, toggleTodo, removeTodo, setError } = useTodoStore();
+const {
+  todos,
+  loading,
+  error,
+  fetchTodos,
+  addTodo,
+  toggleTodo,
+  removeTodo,
+  setError,
+} = useTodoStore();
 const [inputText, setInputText] = useState<string>("");
 ```
 
 **설명:**
+
 - `todos`, `loading`, `error`는 이제 store에서 가져옴
 - `inputText`는 로컬 상태로 유지 (입력창은 전역 상태 불필요)
 
 ### 5-3. useEffect 수정
 
 **기존:**
+
 ```typescript
 useEffect(() => {
   fetchTodos();
@@ -329,6 +360,7 @@ useEffect(() => {
 ```
 
 **수정 후:**
+
 ```typescript
 useEffect(() => {
   fetchTodos();
@@ -337,6 +369,7 @@ useEffect(() => {
 ```
 
 **또는 더 나은 방법:**
+
 ```typescript
 useEffect(() => {
   useTodoStore.getState().fetchTodos();
@@ -346,6 +379,7 @@ useEffect(() => {
 ### 5-4. 함수들 제거
 
 **기존:**
+
 ```typescript
 const fetchTodos = async () => { ... };
 const addTodo = async () => { ... };
@@ -354,6 +388,7 @@ const handleDeleteTodo = async (id: number) => { ... };
 ```
 
 **수정 후:**
+
 ```typescript
 // 모두 제거! Store에 있음
 // 단, addTodo는 inputText를 처리해야 하므로 래퍼 함수 필요
@@ -389,7 +424,7 @@ function App() {
     addTodo,
     toggleTodo,
     removeTodo,
-    setError
+    setError,
   } = useTodoStore();
 
   const [inputText, setInputText] = useState<string>("");
@@ -578,7 +613,12 @@ src/
 ### 6-2. TodoHeader.tsx
 
 ```typescript
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export function TodoHeader() {
   return (
@@ -674,6 +714,7 @@ export function TodoStats() {
 ```
 
 **주목:** `useTodoStore((state) => state.todos)`
+
 - Selector를 사용하여 필요한 상태만 구독
 - 성능 최적화!
 
@@ -682,7 +723,7 @@ export function TodoStats() {
 ```typescript
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTodoStore } from "@/store/useTodoStore";
-import { TodoItem } from "./TodoItem";
+import { TodoItem } from "@/components/TodoItem";
 
 export function TodoList() {
   const todos = useTodoStore((state) => state.todos);
@@ -694,9 +735,7 @@ export function TodoList() {
       </CardHeader>
       <CardContent>
         {todos.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">
-            할 일이 없습니다.
-          </p>
+          <p className="text-center text-gray-500 py-8">할 일이 없습니다.</p>
         ) : (
           <div className="space-y-2">
             {todos.map((todo) => (
@@ -737,9 +776,7 @@ export function TodoItem({ todo }: TodoItemProps) {
         />
         <span
           className={`${
-            todo.completed
-              ? "line-through text-gray-400"
-              : "text-gray-900"
+            todo.completed ? "line-through text-gray-400" : "text-gray-900"
           }`}
         >
           {todo.title}
@@ -874,14 +911,17 @@ export const useTodoStore = create<TodoStore>()(
 ### 8-1. 기본 기능
 
 1. **초기 로드**
+
    - 스피너 표시
    - 데이터 로드
 
 2. **추가**
+
    - 할 일 추가
    - 목록 업데이트
 
 3. **완료**
+
    - 체크박스 클릭
    - 상태 변경
 
@@ -892,6 +932,7 @@ export const useTodoStore = create<TodoStore>()(
 ### 8-2. 컴포넌트 분리 테스트 (선택사항)
 
 1. **독립성 확인**
+
    - 각 컴포넌트가 독립적으로 store 접근
    - Props drilling 없음
 
@@ -906,11 +947,13 @@ export const useTodoStore = create<TodoStore>()(
 ### 문제 1: ESLint 경고
 
 **증상:**
+
 ```
 React Hook useEffect has a missing dependency: 'fetchTodos'
 ```
 
 **해결:**
+
 ```typescript
 useEffect(() => {
   fetchTodos();
@@ -921,11 +964,13 @@ useEffect(() => {
 ### 문제 2: 타입 에러
 
 **증상:**
+
 ```
 Property 'xxx' does not exist on type 'TodoStore'
 ```
 
 **해결:**
+
 - Interface에 해당 속성 추가
 - Store 정의 확인
 
@@ -940,7 +985,7 @@ const useStore = create((set, get) => ({
   // 상태
   count: 0,
   // Actions
-  increment: () => set((state) => ({ count: state.count + 1 }))
+  increment: () => set((state) => ({ count: state.count + 1 })),
 }));
 ```
 
@@ -965,7 +1010,7 @@ fetchData: async () => {
   } catch (error) {
     set({ error, loading: false });
   }
-}
+};
 ```
 
 ---
@@ -973,6 +1018,7 @@ fetchData: async () => {
 ## 체크리스트
 
 **필수:**
+
 - [ ] Zustand 설치
 - [ ] useTodoStore.ts 생성
 - [ ] Interface 정의
@@ -981,6 +1027,7 @@ fetchData: async () => {
 - [ ] 모든 기능 테스트
 
 **선택사항:**
+
 - [ ] 컴포넌트 분리
 - [ ] Selector 사용
 - [ ] DevTools 설정
@@ -993,6 +1040,7 @@ fetchData: async () => {
 5단계를 완료했다면 프론트엔드 기초는 완성!
 
 **추가 학습 주제:**
+
 - React Router (페이지 라우팅)
 - React Hook Form (폼 관리)
 - TanStack Query (서버 상태 관리)
