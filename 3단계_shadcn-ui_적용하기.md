@@ -1,6 +1,6 @@
 # 3단계: shadcn/ui 적용하기 (Tailwind CSS v4)
 
-## 목표 test
+## 목표
 
 Todo 앱을 shadcn/ui 컴포넌트로 업그레이드하여 프로페셔널한 UI 만들기
 
