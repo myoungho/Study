@@ -25,10 +25,12 @@ function getPreferredTheme(): Theme {
   return prefersDark ? "dark" : "light";
 }
 
+const initialTheme = getPreferredTheme();
+
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: "dark",
+      theme: initialTheme,
       setTheme: (theme) => set({ theme }),
       toggleTheme: () => {
         const next = get().theme === "dark" ? "light" : "dark";

@@ -3,6 +3,7 @@ import { Outlet } from "@tanstack/react-router";
 import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useAuthStore } from "@/features/auth/model/auth-store";
+import { useThemeStore } from "@/shared/lib/theme-store";
 import { TopNav } from "@/widgets/navigation/top-nav";
 
 type RouterDevtoolsModule = typeof import("@tanstack/react-router-devtools");
@@ -25,6 +26,7 @@ const Fallback = () => (
 
 export function AppShell() {
   const bootstrap = useAuthStore((state) => state.bootstrap);
+  const theme = useThemeStore((state) => state.theme);
 
   useEffect(() => {
     bootstrap();
@@ -38,7 +40,7 @@ export function AppShell() {
           <Outlet />
         </Suspense>
       </main>
-      <Toaster theme="dark" position="bottom-right" richColors closeButton />
+      <Toaster theme={theme} position="bottom-right" richColors closeButton />
       {isDev && LazyRouterDevtools && (
         <Suspense fallback={null}>
           <LazyRouterDevtools position="bottom-right" />
